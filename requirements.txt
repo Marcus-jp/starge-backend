@@ -1,6 +1,15 @@
+# Build tools (fixes pkg_resources / pandas issues)
+setuptools>=65.5.0
+wheel>=0.40.0
+
+# Web framework
 fastapi==0.104.1
 uvicorn==0.24.0
+
+# Form / file handling
 python-multipart==0.0.6
+
+# Data processing / ML
 joblib==1.3.2
 pandas==1.5.3
 scikit-learn==1.3.2
