@@ -1,9 +1,7 @@
-# predict.py - for FastAPI backend
+# predict.py - for FastAPI backend (NO SKLEARN)
 import joblib
-import pandas as pd
 import numpy as np
 import os
-import json
 
 # ========== DISEASE INFORMATION ==========
 disease_info = {
@@ -133,15 +131,17 @@ def predict_disease(selected_symptoms, use_enhanced=False, enhanced_features_inp
             val = enhanced_features_input[feature]
         input_data.append(val)
     
-    df_input = pd.DataFrame([input_data], columns=feature_names)
+    # Convert to numpy array instead of pandas DataFrame
+    input_array = np.array([input_data])
     
     try:
-        probs = model.predict_proba(df_input)[0]
+        probs = model.predict_proba(input_array)[0]
         top_3_idx = np.argsort(probs)[::-1][:3]
         predictions = []
         
         for i in top_3_idx:
-            disease = encoder.inverse_transform([i])[0]
+            # Use encoder.classes_ instead of inverse_transform (no sklearn needed!)
+            disease = encoder.classes_[i]
             confidence = float(probs[i] * 100)
             info = disease_info.get(disease, {})
             
