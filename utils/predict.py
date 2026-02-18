@@ -119,16 +119,19 @@ def predict_disease(selected_symptoms, use_enhanced=False, enhanced_features_inp
 
     input_data = []
     for feature in feature_names:
-        # check basic symptoms
         val = 0
-        for s in selected_symptoms:
-            mapped = symptom_mapping.get(s)
-            if mapped == feature:
-                val = 1
-                break
-        # check enhanced
+        
+        # First check if it's an enhanced feature (takes priority)
         if enhanced_features_input and feature in enhanced_features_input:
-            val = enhanced_features_input[feature]
+            val = enhanced_features_input[feature]  # Use the index directly
+        else:
+            # Otherwise check basic symptoms
+            for s in selected_symptoms:
+                mapped = symptom_mapping.get(s)
+                if mapped == feature:
+                    val = 1
+                    break
+        
         input_data.append(val)
     
     # Convert to numpy array instead of pandas DataFrame
