@@ -1,6 +1,5 @@
-# predict.py - for FastAPI backend
+# predict.py - for FastAPI backend (NO SKLEARN)
 import joblib
-import pandas as pd
 import numpy as np
 import os
 
@@ -68,6 +67,15 @@ enhanced_symptoms = {
     }
 }
 
+# Mapping enhanced features values for model input
+enhanced_mapping = {
+    "No fever": 0, "Continuous fever": 1, "Cyclical fever (comes & goes)": 2, "Sudden high fever": 3,
+    "No significant pain": 0, "Joint pain": 1, "Muscle pain": 2, "Abdominal pain": 3, "Chest pain": 4, "Headache": 5,
+    "No rash": 0, "Blisters": 1, "Flat red rash": 2, "Rose spots": 3, "Petechial spots": 4,
+    "Normal": 0, "Watery diarrhea": 1, "Rice-water stools": 2, "Pale/clay-colored": 3, "Bloody": 4,
+    "Normal": 0, "Dark urine": 1, "Blood in urine": 2, "Frequent urination": 3, "Burning sensation": 4
+}
+
 # ========== MODEL LOADING ==========
 def load_model(use_enhanced=False):
     """Load model, encoder, and feature names"""
@@ -123,7 +131,7 @@ def predict_disease(selected_symptoms, use_enhanced=False, enhanced_features_inp
             val = enhanced_features_input[feature]
         input_data.append(val)
     
-    # Create numpy array for prediction
+    # Convert to numpy array instead of pandas DataFrame
     input_array = np.array([input_data])
     
     try:
@@ -132,7 +140,8 @@ def predict_disease(selected_symptoms, use_enhanced=False, enhanced_features_inp
         predictions = []
         
         for i in top_3_idx:
-            disease = encoder.inverse_transform([i])[0]
+            # Use encoder.classes_ instead of inverse_transform (no sklearn needed!)
+            disease = encoder.classes_[i]
             confidence = float(probs[i] * 100)
             info = disease_info.get(disease, {})
             
